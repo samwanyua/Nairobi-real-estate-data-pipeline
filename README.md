@@ -64,3 +64,72 @@ Also integrated with:
 
 ---
 
+## Project Structure
+```
+Nairobi-real-estate-pipeline/
+├── airflow/
+│   └── dags/
+│       ├── a_list_scraper_dag.py
+│       ├── buyrentkenya_scraper_dag.py
+│       ├── property24_scraper_dag.py
+│       └── email_notification_dag.py
+│
+├── kafka/
+│   └── producer/
+│       └── push_to_kafka.py
+│
+├── scraper/
+│   ├── a_list_scraper.py
+│   ├── buyrentkenya_scraper.py
+│   ├── property24_scraper.py
+│
+├── spark/
+│   └── kafka_stream_to_postgres.py
+│
+├── postgres/
+│   ├── schema.sql
+│   └── docker-entrypoint.sh
+│
+├── notification/
+│   └── email_notifier.py
+│
+├── docker-compose.yml
+├── .env
+├── requirements.txt
+└── README.md
+```
+
+## Getting Started
+1. Clone the repository
+```
+git clone https://github.com/samwanyua/Nairobi-real-estate-data-pipeline.git
+cd Nairobi-real-estate-data-pipeline
+```
+2. Configure environment variables
+Copy and edit the .env file:
+
+```
+cp .env.example .env
+```
+Example .env:
+
+```
+POSTGRES_USER=realestate
+POSTGRES_PASSWORD=password
+POSTGRES_DB=properties
+SMTP_USER=your_email@example.com
+SMTP_PASS=your_app_password
+EMAIL_RECEIVER=receiver@example.com
+```
+3. Launch services via Docker
+```
+docker-compose up -d
+```
+4. Run a scraper manually (optional)
+```
+python scraper/a_list_scraper.py
+```
+5. Start the Spark streaming job
+```
+spark-submit spark/kafka_stream_to_postgres.py
+```
