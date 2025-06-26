@@ -79,6 +79,8 @@ services:
       AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://postgres:postgres@postgres_raw:5432/nrbproperties
     volumes:
+      - ./kafka_producer:/opt/airflow/kafka_producer
+      - ./scraper:/opt/airflow/scraper
       - ./airflow_dags/dags:/opt/airflow/dags
       - airflow_logs:/opt/airflow/logs
       - airflow_db:/opt/airflow/db

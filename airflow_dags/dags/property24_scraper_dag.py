@@ -1,8 +1,8 @@
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from datetime import datetime
-from kafka.producer.push_to_kafka import run_stream
-from airflow_dags.kafka_to_postgres import consume_and_insert
+from kafka_producer.producer.push_to_kafka import run_stream
+from kafka_to_postgres import consume_and_insert
 
 
 default_args = {

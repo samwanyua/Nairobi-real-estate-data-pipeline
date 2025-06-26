@@ -3,7 +3,7 @@ from confluent_kafka import Producer
 
 from scraper.property24_scraper import get_total_pages, scrape_property24_page
 
-# CHECKPOINT_FILE = os.path.join(os.path.dirname(__file__), '..', '..', 'last_page.txt')
+CHECKPOINT_FILE = os.path.join(os.path.dirname(__file__), '..', '..', 'last_page.txt')
 conf = {'bootstrap.servers': 'kafka:9092'}
 producer = Producer(conf)
 print("Broker metadata:", producer.list_topics(timeout=15).topics.keys())
