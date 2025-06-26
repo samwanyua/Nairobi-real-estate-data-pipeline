@@ -1,0 +1,29 @@
+# Web scraping
+requests==2.31.0
+beautifulsoup4==4.12.3
+lxml==5.2.1
+
+# Kafka
+kafka-python==2.0.2
+
+# Spark (PySpark for structured streaming)
+pyspark==3.5.1
+
+# Airflow (minimal base install)
+apache-airflow==2.9.0
+# Optional: PostgreSQL support for Airflow
+apache-airflow-providers-postgres==5.10.0
+
+# PostgreSQL
+psycopg2-binary==2.9.9
+
+# Email notifications
+sendgrid==6.11.0
+python-dotenv==1.0.1
+
+# Elasticsearch
+elasticsearch==8.13.0
+
+# Dev and CI tools
+flake8==7.0.0
+pytest==8.2.1
