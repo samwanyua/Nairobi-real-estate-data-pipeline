@@ -4,7 +4,7 @@ import requests
 from bs4 import BeautifulSoup
 import time
 
-def scrape_property24(pages=2, delay=1):
+def scrape_property24(pages=9266, delay=1):
     listings = []
 
     base_url = "https://www.property24.co.ke/property-for-sale-in-nairobi-c1890"
