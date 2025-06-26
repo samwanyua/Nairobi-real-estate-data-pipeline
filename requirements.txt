@@ -5,6 +5,7 @@ lxml==5.2.1
 
 # Kafka
 kafka-python==2.0.2
+confluent-kafka
 
 # Spark (PySpark for structured streaming)
 pyspark==3.5.1

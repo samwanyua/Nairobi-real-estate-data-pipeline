@@ -1,34 +1,56 @@
-import json
-from kafka import KafkaProducer
-from scraper.property24_scraper import scrape_property24
-import time
+import json, time, os
+from confluent_kafka import Producer
 
-# initialize kafka producer
-producer = KafkaProducer(
-    bootstrap_servers='localhost:9092',
-    value_serializer= lambda v: json.dumps(v).encode('utf-8'))
+from scraper.property24_scraper import get_total_pages, scrape_property24_page
+
+CHECKPOINT_FILE = os.path.join(os.path.dirname(__file__), '..', '..', 'last_page.txt')
+conf = {'bootstrap.servers': 'localhost:9092'}
+producer = Producer(conf)
+print("Broker metadata:", producer.list_topics(timeout=15).topics.keys())
+
 
 def delivery_report(err, msg):
     if err:
-        print(f"Delivery failed: {err}")
-
+        print(f"Delivery failed for {msg.key()}: {err}")
     else:
-        print(f"Delivered to {msg.topic()} [msg.partition()]")
+        print(f"Delivered to {msg.topic()} [{msg.partition()}]")
 
-def send_to_kafka(listings, topic='raw_listings'):
-    for listing in listings:
+
+def get_last_page():
+    if os.path.exists(CHECKPOINT_FILE):
         try:
-            producer.send(topic, listing)
-            print(f"Sent to Kafka: {listing['title']} - {listing['price']}")
-            time.sleep(0.1)
-        except Exception as e:
-            print(f"Failed to send: {e}")
+            return int(open(CHECKPOINT_FILE).read().strip())
+        except:
+            return 0
+    return 0
+
+
+def save_last_page(page):
+    with open(CHECKPOINT_FILE, 'w') as f:
+        f.write(str(page))
+
+
+def run_stream(delay=1):
+    total_pages = get_total_pages()
+    start_page = get_last_page() + 1
+    print(f"Processing pages {start_page} to {total_pages}")
+
+    for page in range(start_page, total_pages + 1):
+        listings = scrape_property24_page(page)
+        print(f"Page {page}: {len(listings)} listings")
+
+        for listing in listings:
+            producer.produce(
+                'raw_listings',
+                key=str(listing['page']),
+                value=json.dumps(listing),
+                callback=delivery_report
+            )
+            producer.poll(0)   # drive callbacks
+
+        producer.flush()
+        save_last_page(page)
+        time.sleep(delay)
 
 if __name__ == "__main__":
-    print("Scraping property listings...")
-    listings = scrape_property24()
-    if listings:
-        print(f"{len(listings)} listings scraped. Sending to kafka...")
-        send_to_kafka(listings)
-    else:
-        print("No listings found")
+    run_stream(delay=0.5)
