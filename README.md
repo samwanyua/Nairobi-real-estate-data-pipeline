@@ -1,6 +1,51 @@
-## Nairobi Real Estate Data Pipeline
-
+## Nairobi Real Estate Data Pipeline 
 A real-time data pipeline that scrapes, processes, stores, and visualizes property listings in Nairobi, Kenya — starting with platforms like **A-List Real Estate**, **BuyRentKenya**, and **Property24**.
+
+### Problem Statement
+Nairobi’s real estate market is fragmented, opaque, and difficult to track in real time. Most property listings are scattered across various platforms like A-List, BuyRentKenya, and Property24, with:
+
+* No centralized view of new listings or pricing trends
+
+* Manual search effort for buyers, renters, and investors
+
+* Outdated or duplicate listings, making decision-making inefficient
+
+* No automated analytics for agents, developers, or researchers
+
+* Minimal market intelligence for planning, urbanization, or investment
+
+### How This Project Helps to Solve Real Estate Challenges in Nairobi with Data Engineering
+This data pipeline automates the collection, cleaning, and delivery of property listing data across multiple major websites in real-time. It aims to:
+
+* Centralize Listings
+    * Gathers listings from multiple top real estate websites in Kenya
+
+    * Consolidates data into one source of truth (clean_db)
+
+* Enable Real-Time Monitoring
+    * Uses Apache Kafka + Spark to ingest and clean data in real time
+
+    * Keeps data fresh, deduplicated, and structured
+
+* Deliver Automated Insights
+    * Sends email summaries every 6 hours with new property listings
+
+
+* Empower Stakeholders
+    * Buyers: Save time browsing scattered sites — get clean, consolidated listings
+
+    * Agents: Monitor competitor listings or trends in real time
+
+    * Analysts/Planners: Gain visibility into property volume, location hotspots, pricing changes
+
+* Scale to Other Use Cases
+The architecture is modular, so it can be extended to:
+
+    * Other towns (e.g., Mombasa, Kisumu)
+
+    * Other asset classes (e.g., used cars, rental furniture, etc.)
+
+
 
 ---
 
