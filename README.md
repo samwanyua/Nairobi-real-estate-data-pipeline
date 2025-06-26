@@ -121,7 +121,7 @@ Nairobi-real-estate-pipeline/
 │       ├── property24_scraper_dag.py
         ├── kafka_to_postgres.py
 │       ├── email_notification_dag.py
-│       └── db_cleanup_or_reprocess_dag.py  # Optional: raw ➝ clean reprocess
+│       └── db_cleanup_or_reprocess_dag.py  
 │
 ├── kafka/
 │   └── producer/
