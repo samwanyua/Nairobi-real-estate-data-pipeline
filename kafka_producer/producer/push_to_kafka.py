@@ -8,6 +8,13 @@ producer = KafkaProducer(
     bootstrap_servers='localhost:9092',
     value_serializer= lambda v: json.dumps(v).encode('utf-8'))
 
+def delivery_report(err, msg):
+    if err:
+        print(f"Delivery failed: {err}")
+
+    else:
+        print(f"Delivered to {msg.topic()} [msg.partition()]")
+
 def send_to_kafka(listings, topic='raw_listings'):
     for listing in listings:
         try:
@@ -19,7 +26,7 @@ def send_to_kafka(listings, topic='raw_listings'):
 
 if __name__ == "__main__":
     print("Scraping property listings...")
-    listings = scrape_property24(pages=9266)
+    listings = scrape_property24()
     if listings:
         print(f"{len(listings)} listings scraped. Sending to kafka...")
         send_to_kafka(listings)
