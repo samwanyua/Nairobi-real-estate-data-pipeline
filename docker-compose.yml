@@ -68,7 +68,7 @@ services:
 
   ### Apache Airflow 
   airflow:
-    image: apache/airflow:2.9.0
+    image: samwanyua/airflow-custom:latest
     container_name: airflow
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
