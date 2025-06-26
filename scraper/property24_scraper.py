@@ -1,27 +1,41 @@
-# scraper/property24_scraper.py
-
 import requests
 from bs4 import BeautifulSoup
 import time
 
-def scrape_property24(pages=9266, delay=1):
-    listings = []
-
-    base_url = "https://www.property24.co.ke/property-for-sale-in-nairobi-c1890"
-    headers = {
+BASE_URL = "https://www.property24.co.ke/property-for-sale-in-nairobi-c1890"
+headers = {
         "User-Agent": "Mozilla/5.0"
     }
 
-    for page in range(1, pages + 1):
-        url = base_url if page == 1 else f"{base_url}?Page={page}"
-        print(f"🔍 Scraping Property24 - Page {page} - {url}")
+listings = []
 
+def get_total_pages():
+    try:
+        resp = requests.get(BASE_URL, timeout=10)
+        soup = BeautifulSoup(resp.content, "html.parser")
+        pagination = soup.select("ul.pagination li.pagelink a")
+
+        # Get the highest page number from pagination links
+        pages = [int(a.text.strip()) for a in pagination if a.text.strip().isdigit()]
+        return max(pages) if pages else 1
+    except Exception as e:
+        print(f"Error getting total pages: {e}")
+        return 1  # fallback
+
+def scrape_property24(delay=1):
+    total_pages = get_total_pages()
+    print(f"🔢 Total pages found: {total_pages}")
+
+    for page in range(1, total_pages + 1):
+        url = f"{BASE_URL}?Page={page}" if page > 1 else BASE_URL
+        print(f"Scraping Property24 - Page {page} - {url}")
+        
         try:
             response = requests.get(url, headers=headers, timeout=10)
             response.raise_for_status()
             soup = BeautifulSoup(response.text, "html.parser")
         except Exception as e:
-            print(f"❌ Failed to fetch page {page}: {e}")
+            print(f"Failed to fetch page {page}: {e}")
             continue
 
         cards = soup.select(".p24_content")
@@ -65,14 +79,9 @@ def scrape_property24(pages=9266, delay=1):
                 })
 
             except Exception as e:
-                print(f"⚠️ Error parsing listing on page {page}: {e}")
+                print(f"Error parsing listing on page {page}: {e}")
 
         time.sleep(delay)
 
-    return listings
-
-
 if __name__ == "__main__":
-    from pprint import pprint
-    data = scrape_property24(pages=2)
-    pprint(data)
+    scrape_property24()
