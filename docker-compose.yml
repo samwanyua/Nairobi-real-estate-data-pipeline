@@ -56,6 +56,10 @@ services:
       - "9092:9092"
     depends_on:
       - zookeeper
+    healthcheck:
+      test: ["CMD", "kafka-topics", "--bootstrap-server", "localhost:9092", "--list"]
+      interval: 10s
+      retries: 10
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
@@ -70,6 +74,9 @@ services:
   airflow:
     image: samwanyua/airflow-custom:latest
     container_name: airflow
+    depends_on:
+      - kafka
+      - postgres_raw
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:8080/health || exit 1"]
       interval: 10s
@@ -77,6 +84,7 @@ services:
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
       AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
+      AIRFLOW__WEBSERVER__WEB_SERVER_MASTER_TIMEOUT: 300
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://postgres:postgres@postgres_raw:5432/nrbproperties
     volumes:
       - ./kafka_producer:/opt/airflow/kafka_producer
@@ -88,8 +96,6 @@ services:
     entrypoint: /entrypoint.sh
     ports:
       - "8080:8080"
-    depends_on:
-      - postgres_raw
     networks:
       - pipeline_net
 

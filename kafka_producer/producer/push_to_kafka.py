@@ -6,7 +6,9 @@ from scraper.property24_scraper import get_total_pages, scrape_property24_page
 CHECKPOINT_FILE = os.path.join(os.path.dirname(__file__), '..', '..', 'last_page.txt')
 conf = {'bootstrap.servers': 'kafka:9092'}
 producer = Producer(conf)
-print("Broker metadata:", producer.list_topics(timeout=15).topics.keys())
+
+def print_metadata():
+    print("Broker metadata:", producer.list_topics(timeout=15).topics.keys())
 
 
 def delivery_report(err, msg):
@@ -29,8 +31,21 @@ def save_last_page(page):
     with open(CHECKPOINT_FILE, 'w') as f:
         f.write(str(page))
 
+def wait_for_kafka(max_retries=10):
+    for attempt in range(max_retries):
+        try:
+            producer.list_topics(timeout=5)
+            return True
+        except Exception as e:
+            print(f"[Kafka] Attempt {attempt+1} failed: {e}")
+            time.sleep(5)
+    raise RuntimeError("Kafka not reachable")
+
 
 def run_stream(delay=1):
+
+    print_metadata()
+    wait_for_kafka()
     total_pages = get_total_pages()
     start_page = get_last_page() + 1
     print(f"Processing pages {start_page} to {total_pages}")
