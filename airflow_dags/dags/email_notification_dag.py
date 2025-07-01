@@ -1,35 +1,26 @@
 from airflow import DAG
-from airflow.operators.email import EmailOperator
 from airflow.operators.python import PythonOperator
-from datetime import datetime
-
-def generate_message(**kwargs):
-    return "New property alert: 3-bedroom in Westlands for KES 85,000!"
+from datetime import datetime, timedelta
+from notification.email_notifier import send_email_alert
 
 default_args = {
     'owner': 'airflow',
-    'start_date': datetime(2025, 6, 25),
-    'retries': 1
+    'retries': 1,
+    'retry_delay': timedelta(minutes=5),
+    'start_date': datetime(2025, 6, 26),
 }
 
 with DAG(
     dag_id='email_notification_dag',
     default_args=default_args,
-    schedule_interval='@hourly',
+    schedule_interval='@daily',
     catchup=False,
-    tags=['notifications']
+    tags=['notification']
 ) as dag:
 
-    prepare_msg = PythonOperator(
-        task_id='prepare_email_body',
-        python_callable=generate_message
+    notify_user = PythonOperator(
+        task_id='send_property_alert_email',
+        python_callable=send_email_alert
     )
 
-    notify = EmailOperator(
-        task_id='send_email',
-        to='samexample8@gmail.com',
-        subject='New Nairobi Property Listing!',
-        html_content="{{ ti.xcom_pull(task_ids='prepare_email_body') }}",
-    )
-
-    prepare_msg >> notify
+    notify_user
