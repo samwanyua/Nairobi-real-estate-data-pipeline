@@ -114,47 +114,56 @@ Also integrated with:
 ## Project Structure
 ```
 Nairobi-real-estate-pipeline/
-├── airflow/
-│   └── dags/
-│       ├── a_list_scraper_dag.py
-│       ├── buyrentkenya_scraper_dag.py
-│       ├── property24_scraper_dag.py
-        ├── kafka_to_postgres.py
-│       ├── email_notification_dag.py
-│       └── db_cleanup_or_reprocess_dag.py  
+├── airflow_dags/
+│ ├── dags/
+│ │ ├── a_list_scraper_dag.py
+│ │ ├── buyrentkenya_scraper_dag.py
+│ │ ├── db_cleanup_or_reprocess_dag.py
+│ │ ├── email_notification_dag.py
+│ │ ├── kafka_to_postgres.py
+│ │ ├── property24_scraper_dag.py
+│ │ └── pycache/
+│ └── docker-entrypoint.sh
 │
-├── kafka/
-│   └── producer/
-│       └── push_to_kafka.py
+├── kafka_producer/
+│ ├── init.py
+│ ├── producer/
+│ │ ├── Dockerfile
+│ │ ├── init.py
+│ │ ├── push_to_kafka.py
+│ │ └── pycache/
+│ └── pycache/
 │
 ├── scraper/
-│   ├── a_list_scraper.py
-│   ├── buyrentkenya_scraper.py
-│   ├── property24_scraper.py
+│ ├── a_list_scraper.py
+│ ├── buyrentkenya_scraper.py
+│ ├── property24_scraper.py
+│ ├── init.py
+│ └── pycache/
 │
 ├── spark/
-│   └── kafka_stream_to_postgres.py
-│       # Reads from Kafka ➝ writes to clean_db
+│ └── kafka_stream_to_postgres.py # Reads from Kafka → writes to clean_db
 │
 ├── postgres/
-│   ├── raw_db/
-│   │   ├── init.sql            # raw.property_listings schema
-│   │   └── docker-entrypoint.sh
-│   ├── clean_db/
-│   │   ├── init.sql            # clean.property_listings schema
-│   │   └── docker-entrypoint.sh
+│ ├── raw_db/
+│ │ └── init.sql # raw.property_listings schema
+│ ├── clean_db/
+│ │ └── init.sql # clean.property_listings schema
 │
 ├── notification/
-│   └── email_notifier.py
+│ └── email_notifier.py # Sends property alerts via email
 │
 ├── elasticsearch/
-│   ├── pipeline_to_es.py       # Push transformed data to Elasticsearch
-│   └── dashboards/
-│       └── kibana_saved_objects.ndjson
+│ ├── pipeline_to_es.py # Push transformed data to Elasticsearch
+│ └── dashboards/
+│ └── kibana_saved_objects.ndjson # Kibana dashboard config
+│
+├── env/ # Python virtual environment
 │
 ├── docker-compose.yml
-├── .env
+├── Dockerfile.airflow
 ├── requirements.txt
+├── LICENSE
 └── README.md
 
 ```
