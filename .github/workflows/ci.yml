@@ -65,6 +65,6 @@ jobs:
         echo "No tests directory yet — skipping pytest"
         # pytest tests/
 
-    - name: 🐳 Validate docker-compose syntax
+    - name: 🐳 Validate docker compose syntax
       run: |
-        docker-compose -f docker-compose.yml config
+        docker compose -f docker compose.yml config
