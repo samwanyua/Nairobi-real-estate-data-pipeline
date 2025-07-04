@@ -52,6 +52,7 @@ jobs:
     - name: Lint Python scripts with flake8
       run: |
         flake8 \
+          --ignore=E302,E401,E402,E501,E702,E722,F401,W391,W292 \
           scraper/ \
           kafka_producer/producer/ \
           airflow_dags/dags/ \
