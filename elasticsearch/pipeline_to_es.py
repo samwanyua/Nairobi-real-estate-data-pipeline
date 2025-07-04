@@ -18,27 +18,27 @@ ES_INDEX = "nairobi-properties"
 def fetch_properties():
     conn = psycopg2.connect(**PG_CONFIG)
     cursor = conn.cursor()
-    
+
     query = """
     SELECT id, title, location, price, bedrooms, bathrooms, size, listing_url
     FROM properties
     """
-    
+
     cursor.execute(query)
     rows = cursor.fetchall()
-    
+
     colnames = [desc[0] for desc in cursor.description]
-    
+
     properties = [dict(zip(colnames, row)) for row in rows]
-    
+
     cursor.close()
     conn.close()
-    
+
     return properties
 
 def push_to_elasticsearch(data):
     es = Elasticsearch(ES_HOST)
-    
+
     actions = [
         {
             "_index": ES_INDEX,
@@ -47,7 +47,7 @@ def push_to_elasticsearch(data):
         }
         for item in data
     ]
-    
+
     if actions:
         helpers.bulk(es, actions)
         print(f"Pushed {len(actions)} records to Elasticsearch index '{ES_INDEX}'")
@@ -57,7 +57,7 @@ def push_to_elasticsearch(data):
 def main():
     print("Fetching property listings from Postgres...")
     properties = fetch_properties()
-    
+
     print("Indexing properties into Elasticsearch...")
     push_to_elasticsearch(properties)
 
