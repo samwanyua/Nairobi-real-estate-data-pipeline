@@ -53,8 +53,8 @@ jobs:
       run: |
         flake8 \
           scraper/ \
-          kafka/producer/ \
-          airflow/dags/ \
+          kafka_producer/producer/ \
+          airflow_dags/dags/ \
           spark/ \
           notification/ \
           elasticsearch/
