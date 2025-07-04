@@ -67,4 +67,4 @@ jobs:
 
     - name: 🐳 Validate docker compose syntax
       run: |
-        docker compose -f docker compose.yml config
+        docker compose -f docker-compose.yml config
