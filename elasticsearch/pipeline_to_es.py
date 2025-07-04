@@ -61,5 +61,6 @@ def main():
     print("Indexing properties into Elasticsearch...")
     push_to_elasticsearch(properties)
 
+
 if __name__ == "__main__":
     main()
