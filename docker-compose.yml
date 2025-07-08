@@ -1,7 +1,6 @@
-
 services:
 
-  ###  PostgreSQL: raw_db
+  ### PostgreSQL: raw_db
   postgres_raw:
     image: postgres:16
     container_name: raw_db
@@ -18,12 +17,10 @@ services:
     volumes:
       - raw_db_data:/var/lib/postgresql/data
       - ./postgres/raw_db/init.sql:/docker-entrypoint-initdb.d/init.sql
-
     networks:
       - pipeline_net
 
-
-  ### 🐘 PostgreSQL: clean_db 
+  ###  PostgreSQL: clean_db
   postgres_clean:
     image: postgres:16
     container_name: clean_db
@@ -38,7 +35,7 @@ services:
     networks:
       - pipeline_net
 
-  ### Zookeeper 
+  ###  Zookeeper
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.0
     environment:
@@ -49,7 +46,7 @@ services:
     networks:
       - pipeline_net
 
-  ### Kafka 
+  ###  Kafka
   kafka:
     image: confluentinc/cp-kafka:7.6.0
     ports:
@@ -70,7 +67,7 @@ services:
     networks:
       - pipeline_net
 
-  ### Apache Airflow 
+  ###  Apache Airflow
   airflow:
     image: samwanyua/airflow-custom:latest
     container_name: airflow
@@ -99,9 +96,7 @@ services:
     networks:
       - pipeline_net
 
-
-
-  ###  Spark  
+  ###  Spark
   spark:
     image: bitnami/spark:3.5
     container_name: spark
@@ -110,27 +105,29 @@ services:
     networks:
       - pipeline_net
 
-  ### Elasticsearch 
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
+  ###  Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
     ports:
-      - "9200:9200"
+      - "9090:9090"
     networks:
       - pipeline_net
 
-  ###  Kibana 
-  kibana:
-    image: docker.elastic.co/kibana/kibana:8.13.0
+  ###  Grafana
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
     ports:
-      - "5601:5601"
+      - "3000:3000"
     depends_on:
-      - elasticsearch
+      - prometheus
     networks:
       - pipeline_net
 
+  ###  Kafka Producer
   kafka_producer:
     build:
       context: .
@@ -141,7 +138,6 @@ services:
       PYTHONUNBUFFERED: 1
     networks:
       - pipeline_net
-
 
 volumes:
   raw_db_data:
