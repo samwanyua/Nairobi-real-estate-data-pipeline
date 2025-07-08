@@ -58,7 +58,7 @@ jobs:
           airflow_dags/dags/ \
           spark/ \
           notification/ \
-          elasticsearch/
+          monitoring/
 
     - name: Run tests 
       run: |

@@ -69,6 +69,9 @@ services:
 
   ###  Apache Airflow
   airflow:
+    build:
+      context: .
+      dockerfile: Dockerfile.airflow
     image: samwanyua/airflow-custom:latest
     container_name: airflow
     depends_on:
