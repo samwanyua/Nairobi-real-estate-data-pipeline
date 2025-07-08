@@ -103,6 +103,7 @@ services:
       - ./kafka_producer:/opt/airflow/kafka_producer
       - ./scraper:/opt/airflow/scraper
       - ./airflow_dags/dags:/opt/airflow/dags
+      - ./notification:/opt/airflow/notification
       - airflow_logs:/opt/airflow/logs
       - airflow_db:/opt/airflow/db
       - ./airflow_dags/docker-entrypoint.sh:/entrypoint.sh
@@ -112,14 +113,22 @@ services:
     networks:
       - pipeline_net
 
-  ###  Spark
+    ### Spark Master
   spark:
     image: bitnami/spark:3.5
     container_name: spark
     environment:
-      SPARK_MODE: standalone
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    ports:
+      - "7077:7077"   # Spark master port
+      - "8081:8081"   # Web UI for master
     networks:
       - pipeline_net
+
 
   ###  Prometheus
   prometheus:
