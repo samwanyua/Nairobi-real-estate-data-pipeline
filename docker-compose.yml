@@ -35,6 +35,19 @@ services:
     networks:
       - pipeline_net
 
+  postgres_exporter:
+    image: prometheuscommunity/postgres-exporter
+    container_name: postgres_exporter
+    environment:
+      DATA_SOURCE_NAME: "postgresql://postgres:postgres@postgres_raw:5432/nrbproperties?sslmode=disable"
+    ports:
+      - "9187:9187"
+    depends_on:
+      - postgres_raw
+    networks:
+      - pipeline_net
+
+
   ###  Zookeeper
   zookeeper:
     image: confluentinc/cp-zookeeper:7.6.0
