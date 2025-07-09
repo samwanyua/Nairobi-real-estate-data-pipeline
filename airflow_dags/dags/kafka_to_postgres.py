@@ -24,8 +24,12 @@ def consume_and_insert():
 
     for _ in range(100):  # Poll up to 100 messages
         msg = consumer.poll(1.0)
-        if msg is None or msg.error():
+        if msg is None:
             continue
+        if msg.error():
+            print(f"[Kafka Consumer Error] {msg.error()}")
+            continue
+
         data = json.loads(msg.value().decode('utf-8'))
         batch.append((
             data['title'], data['price'], data['location'], data['address'],
