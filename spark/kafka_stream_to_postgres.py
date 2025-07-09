@@ -1,6 +1,7 @@
 from kafka import KafkaConsumer
 import psycopg2
 import json
+from datetime import datetime
 
 def consume_and_insert():
     consumer = KafkaConsumer(
@@ -21,13 +22,30 @@ def consume_and_insert():
     for msg in consumer:
         data = msg.value
         print(f"Inserting: {data}")
+
         cur.execute("""
-            INSERT INTO cleaned_listings (id, title, price, location)
-            VALUES (%s, %s, %s, %s)
-            ON CONFLICT (id) DO NOTHING
-        """, (data["id"], data["title"], data["price"], data["location"]))
+            INSERT INTO clean_listings (
+                title, price, location, address, description,
+                bedrooms, bathrooms, parking, size_sqm, source, page, inserted_at
+            )
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (
+            data.get("title"),
+            data.get("price"),
+            data.get("location"),
+            data.get("address"),
+            data.get("description"),
+            data.get("bedrooms"),
+            data.get("bathrooms"),
+            data.get("parking"),
+            data.get("size_sqm"),
+            data.get("source"),
+            data.get("page"),
+            datetime.now()
+        ))
+
         conn.commit()
-        break  # Avoid running forever during Airflow DAG runs
+        break  # Only consume one message during Airflow run
 
     cur.close()
     conn.close()
