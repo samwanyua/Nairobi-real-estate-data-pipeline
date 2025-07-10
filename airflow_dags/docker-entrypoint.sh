@@ -2,7 +2,7 @@
 set -e
 
 # Wait for Postgres container to be ready
-until pg_isready -h postgres_raw -p 5432 -U postgres; do
+until pg_isready -h postgres_main -p 5432 -U postgres; do
   echo "⏳ Waiting for Postgres..."
   sleep 2
 done

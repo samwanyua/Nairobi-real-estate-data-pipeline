@@ -1,57 +1,63 @@
 import smtplib
 from email.mime.text import MIMEText
 import psycopg2
+from psycopg2.extras import RealDictCursor
+import os
+
 
 def send_email_alert():
-    # Step 1: Connect to clean_db
-    conn = psycopg2.connect(
-        host="clean_db",
-        dbname="clean_db",
-        user="postgres",
-        password="postgres"
-    )
-    cursor = conn.cursor()
+    try:
+        # DB connection config
+        conn = psycopg2.connect(
+            host= "postgres_main",  
+            dbname="nrbproperties",
+            user="postgres",
+            password="postgres"
+        )
 
-    # Step 2: Fetch the latest listing
-    cursor.execute("""
-        SELECT title, price, location, bedrooms, bathrooms, parking
-        FROM clean_listings
-        ORDER BY inserted_at DESC
-        LIMIT 1;
-    """)
-    listing = cursor.fetchone()
+        with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+            cursor.execute("""
+                SELECT title, price, location, bedrooms, bathrooms, parking
+                FROM clean_listings
+                ORDER BY inserted_at DESC
+                LIMIT 1;
+            """)
+            listing = cursor.fetchone()
 
-    if not listing:
-        print("No listings found.")
-        return
+        conn.close()
 
-    title, price, location, bedrooms, bathrooms, parking = listing
+        if not listing:
+            print("[Email Notifier] No listings found to email.")
+            return
 
-    # Step 3: Compose custom message
-    sender = "samexample8@gmail.com"
-    recipient = "sam2wanyua@gmail.com"
-    subject = "New Property Alert"
-    body = (
-        f"New Listing: {title}\n\n"
-        f"Location: {location}\n"
-        f"Price: KES {price:,.0f} per month\n"
-        f"Bedrooms: {bedrooms}, Bathrooms: {bathrooms}, Parking: {parking}\n"
-        f"\nCheck it out on Property24 or your dashboard!"
-    )
+        # Compose message
+        sender = "samexample8@gmail.com"
+        recipient = "sam2wanyua@gmail.com"
+        subject = "New Property Alert"
 
-    # Step 4: Send the email
-    msg = MIMEText(body)
-    msg["Subject"] = subject
-    msg["From"] = sender
-    msg["To"] = recipient
+        body = (
+            f"New Listing: {listing['title']}\n\n"
+            f"Location: {listing['location']}\n"
+            f"Price: KES {listing['price']:,.0f} per month\n"
+            f"Bedrooms: {listing['bedrooms']}, "
+            f"Bathrooms: {listing['bathrooms']}, "
+            f"Parking: {listing['parking']}\n\n"
+            "Check it out on Property24 or your dashboard!"
+        )
 
-    with smtplib.SMTP("mailserver", 587) as server:
-        server.starttls()
-        server.login("admin", "admin")
-        server.sendmail(sender, recipient, msg.as_string())
+        # Send email
+        msg = MIMEText(body)
+        msg["Subject"] = subject
+        msg["From"] = sender
+        msg["To"] = recipient
 
-    print(f"Email sent: {subject}")
+        with smtplib.SMTP("mailserver", 587) as server:
+            server.starttls()
+            server.login("admin", "admin")
+            server.sendmail(sender, recipient, msg.as_string())
 
-    # Step 5: Clean up
-    cursor.close()
-    conn.close()
+        print(f"[Email Notifier] Email sent to {recipient}")
+
+    except Exception as e:
+        print(f"[Email Notifier] Error: {e}")
+        raise

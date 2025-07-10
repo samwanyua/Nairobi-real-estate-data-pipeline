@@ -17,6 +17,9 @@ with DAG(
     dag_id='property24_scraper_dag',
     default_args=default_args,
     schedule_interval='@hourly',
+    catchup=False, 
+    max_active_runs=2,
+    concurrency=4,
     description='Scrape Property24 ➝ Kafka ➝ PostgreSQL',
     tags=['property24']
 ) as dag:
