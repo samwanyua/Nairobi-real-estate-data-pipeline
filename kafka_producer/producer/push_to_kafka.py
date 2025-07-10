@@ -1,5 +1,7 @@
 import json, time, os
 from confluent_kafka import Producer
+import socket
+
 
 from scraper.property24_scraper import get_total_pages, scrape_property24_page
 
@@ -7,7 +9,11 @@ CHECKPOINT_FILE = os.path.join(os.path.dirname(__file__), '..', '..', 'last_page
 conf = {'bootstrap.servers': 'kafka:29092'}
 producer = Producer(conf)
 
+print("[Debug] Hostname:", socket.gethostname())
+print("[Debug] Kafka config:", conf)
+
 def print_metadata():
+
     print("Broker metadata:", producer.list_topics(timeout=15).topics.keys())
 
 
@@ -32,8 +38,15 @@ def save_last_page(page):
         f.write(str(page))
 
 def wait_for_kafka(max_retries=10):
+    try:
+        kafka_ip = socket.gethostbyname("kafka")
+        print(f"[Debug] 'kafka' resolves to {kafka_ip}")
+    except Exception as e:
+        print(f"[DNS ERROR] Could not resolve 'kafka': {e}")
+        raise
     for attempt in range(max_retries):
         try:
+            print("[Debug] Attempting to connect to Kafka broker")
             producer.list_topics(timeout=5)
             return True
         except Exception as e:
