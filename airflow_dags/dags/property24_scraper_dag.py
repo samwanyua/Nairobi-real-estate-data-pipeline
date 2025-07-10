@@ -16,7 +16,7 @@ default_args = {
 with DAG(
     dag_id='property24_scraper_dag',
     default_args=default_args,
-    schedule_interval='@daily',
+    schedule_interval='@hourly',
     description='Scrape Property24 ➝ Kafka ➝ PostgreSQL',
     tags=['property24']
 ) as dag:

@@ -13,7 +13,7 @@ default_args = {
 with DAG(
     dag_id='email_notification_dag',
     default_args=default_args,
-    schedule_interval='@daily',
+    schedule_interval='@hourly',
     catchup=False,
     tags=['notification']
 ) as dag:

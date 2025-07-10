@@ -8,7 +8,7 @@ os.makedirs(EXPORT_DIR, exist_ok=True)
 # Database configs per your setup
 DBS = {
     "raw": {
-        "host": "postgres_raw",     # from kafka_to_postgres.py
+        "host": "raw_db",     # from kafka_to_postgres.py
         "dbname": "nrbproperties",  # raw db
         "user": "postgres",
         "password": "postgres",

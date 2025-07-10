@@ -108,6 +108,7 @@ services:
       retries: 10
     environment:
       AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       AIRFLOW__CORE__LOAD_EXAMPLES: 'false'
       AIRFLOW__WEBSERVER__WEB_SERVER_MASTER_TIMEOUT: 300
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://postgres:postgres@postgres_raw:5432/nrbproperties
@@ -169,6 +170,7 @@ services:
 
   ###  Kafka Producer
   kafka_producer:
+    container_name: kafka_producer
     build:
       context: .
       dockerfile: kafka_producer/producer/Dockerfile

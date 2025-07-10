@@ -13,7 +13,7 @@ def consume_and_insert():
 
     # Postgres connection
     conn = psycopg2.connect(
-        host='postgres_raw',
+        host='raw_db',
         dbname='nrbproperties',
         user='postgres',
         password='postgres'
