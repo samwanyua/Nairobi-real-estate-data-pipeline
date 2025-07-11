@@ -58,7 +58,7 @@ def scrape_property24_page(page):
                 "size": card.select_one(".p24_size span").text.strip() if card.select_one(".p24_size span") else None,
                 "source": "property24",
                 "page": page,
-                "scraped_at": datetime.utcnow()
+                "scraped_at": datetime.now()
             }
             results.append(listing)
         except Exception as e:
@@ -79,7 +79,7 @@ def save_to_postgres(listings):
         cursor = conn.cursor()
 
         insert_query = """
-        INSERT INTO properties (
+        INSERT INTO raw_listings (
             title, price, location, address, description, bedrooms,
             bathrooms, parking, size, source, page, scraped_at
         ) VALUES %s

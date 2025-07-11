@@ -33,7 +33,8 @@ CREATE TABLE IF NOT EXISTS clean_listings (
     source TEXT,
     page INT,
     processed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    scraped_at TIMESTAMP  -- retain original source timestamp
+    scraped_at TIMESTAMP,  -- retain original source timestamp,
+    inserted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
 );
 
  -- index for analytics
