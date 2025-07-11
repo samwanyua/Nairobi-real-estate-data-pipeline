@@ -125,6 +125,5 @@ def scrape_and_store():
         print(" No listings found.")
 
 
-
 if __name__ == "__main__":
     scrape_and_store()
