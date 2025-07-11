@@ -32,42 +32,7 @@ services:
     networks:
       - pipeline_net
 
-  ### Zookeeper
-  zookeeper:
-    image: confluentinc/cp-zookeeper:7.6.0
-    container_name: zookeeper
-    environment:
-      ZOOKEEPER_CLIENT_PORT: 2181
-      ZOOKEEPER_TICK_TIME: 2000
-    ports:
-      - "2181:2181"
-    networks:
-      - pipeline_net
-
-  ### Kafka
-  kafka:
-    image: confluentinc/cp-kafka:7.6.0
-    container_name: kafka
-    ports:
-      - "9092:9092"
-    depends_on:
-      - zookeeper
-    environment:
-      KAFKA_BROKER_ID: 1
-      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_INTERNAL://kafka:29092
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,PLAINTEXT_INTERNAL://0.0.0.0:29092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-    healthcheck:
-      test: ["CMD", "kafka-topics", "--bootstrap-server", "kafka:29092", "--list"]
-      interval: 10s
-      timeout: 10s
-      retries: 10
-    networks:
-      - pipeline_net
-
+ 
   ### Airflow
   airflow:
     build:
@@ -76,8 +41,6 @@ services:
     image: samwanyua/airflow-custom:latest
     container_name: airflow
     depends_on:
-      kafka:
-        condition: service_healthy
       postgres_main:
         condition: service_healthy
     environment:
@@ -87,7 +50,6 @@ services:
       AIRFLOW__WEBSERVER__WEB_SERVER_MASTER_TIMEOUT: 300
       AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://postgres:postgres@postgres_main:5432/nrbproperties
     volumes:
-      - ./kafka_producer:/opt/airflow/kafka_producer
       - ./scraper:/opt/airflow/scraper
       - ./airflow_dags/dags:/opt/airflow/dags
       - ./notification:/opt/airflow/notification
@@ -109,6 +71,9 @@ services:
     ports:
       - "7077:7077"
       - "8081:8081"
+    volumes:
+      - ./spark:/opt/spark-apps
+      - ./postgresql-42.7.1.jar:/opt/spark-apps/postgresql-42.7.1.jar
     networks:
       - pipeline_net
 
@@ -134,20 +99,6 @@ services:
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin2
-    networks:
-      - pipeline_net
-
-  ### Kafka Producer
-  kafka_producer:
-    container_name: kafka_producer
-    build:
-      context: .
-      dockerfile: kafka_producer/producer/Dockerfile
-    depends_on:
-      kafka:
-        condition: service_healthy
-    environment:
-      PYTHONUNBUFFERED: 1
     networks:
       - pipeline_net
 

@@ -2,9 +2,9 @@ name: Nairobi Real Estate Pipeline Continous Integration(CI)
 
 on:
   push:
-    branches: [main]
+    branches: [v2.1]
   pull_request:
-    branches: [main]
+    branches: [v2.1]
 
 jobs:
   ci:
@@ -54,7 +54,6 @@ jobs:
         flake8 \
           --ignore=E302,E401,E402,E501,E702,E722,F401,W391,W292 \
           scraper/ \
-          kafka_producer/producer/ \
           airflow_dags/dags/ \
           spark/ \
           notification/ \
